@@ -1,4 +1,5 @@
 from itertools import chain
+from time import sleep
 
 from Player import *
 
@@ -13,6 +14,7 @@ class Game:
     win_A = False
     win_B = False
     finish = False
+    restart_flag = False
 
     def initGraphics(self):
         self.Blank = pygame.image.load("obrazki/Blank.jpg")
@@ -44,6 +46,7 @@ class Game:
                          (self.screen.get_rect().size[0] / 2 - 50, self.screen.get_rect().size[1] - 100))
 
     def __init__(self):
+        self.clock = pygame.time.Clock()
         self.initGraphics()
         pygame.init()
         self.screen = pygame.display.set_mode(
@@ -73,7 +76,7 @@ class Game:
         # finishing game
         if self.finish_game():
             game_over = myfont.render("GAME OVER", 1, (255, 255, 255))
-            self.screen.blit(game_over, (250, self.Blank_height * 3 + info_height -30))
+            self.screen.blit(game_over, (250, self.Blank_height * 3 + info_height - 30))
 
     def checking(self, player):
         sum = []
@@ -87,11 +90,29 @@ class Game:
 
     def finish_game(self):
         if self.win_B or self.win_A or (0 not in list(chain.from_iterable(self.board))):
-            self.finish=True
+            self.finish = True
             return True
 
+    def restart(self):
+        mouse = pygame.mouse.get_pos()
+        if self.screen.get_rect().size[0] / 2 - 50 < mouse[0] < self.screen.get_rect().size[0] / 2 + 50 and \
+                self.screen.get_rect().size[1] - 110 < mouse[1] < self.screen.get_rect().size[1] - 60:
+            self.restart_flag = True
+        if pygame.mouse.get_pressed()[0] and self.restart_flag == True:
+            self.restart_flag = True
+            self.win_B = False
+            self.win_A = False
+            self.finish = False
+            self.turn = False
+            for i in range(3):
+                for j in range(3):
+                    self.board[i][j] = 0
+        self.restart_flag = False
+
     def update(self):
+        self.clock.tick(60)
         self.screen.fill(black)
+        self.restart()
         if not self.finish:
             if self.turn:
                 self.board, pressed = self.player_B.press_mouse(self.board)
@@ -103,9 +124,8 @@ class Game:
                     self.turn = True
         self.drawBoard()
         self.draw_info()
-        pygame.display.update()
+        pygame.display.flip()
         for event in pygame.event.get():
             # quit if the quit button was pressed
             if event.type == pygame.QUIT:
                 exit()
-        mouse = pygame.mouse.get_pos()

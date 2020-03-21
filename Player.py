@@ -5,6 +5,7 @@ import math
 class Player:
     name = "gracz"
     value = 0
+
     def __init__(self, name, screen, nickname="Ola"):
         self.screen = screen
         self.name = name
@@ -20,7 +21,7 @@ class Player:
         mouse = pygame.mouse.get_pos()
         xpos = int(math.floor((mouse[0] / 205)))
         ypos = int(math.floor((mouse[1] / 205)))
-        if (mouse[0] > 620) or mouse[1] > 620:
+        if mouse[1] > 610:
             out_of_bounds = True
         if pygame.mouse.get_pressed()[0] and out_of_bounds == False and board[xpos][
             ypos] == 0 and self.name == "circle":
