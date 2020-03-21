@@ -1,3 +1,5 @@
+from itertools import chain
+
 from Player import *
 
 black = (0, 0, 0)
@@ -10,6 +12,7 @@ class Game:
     turn = False
     win_A = False
     win_B = False
+    finish = False
 
     def initGraphics(self):
         self.Blank = pygame.image.load("obrazki/Blank.jpg")
@@ -58,8 +61,8 @@ class Game:
             self.screen.blit(self.cross, (label.get_rect().size[0] + 15, self.Blank_height * 3 + 6 * bar_width))
         else:
             self.screen.blit(self.circle, (label.get_rect().size[0] + 15, self.Blank_height * 3 + 6 * bar_width))
-        #checking the winner
-        self.win_A=self.checking(self.player_A)
+        # checking the winner
+        self.win_A = self.checking(self.player_A)
         self.win_B = self.checking(self.player_B)
         if self.win_A:
             winner = myfont.render("Winner is : {}".format(self.player_A.nickname), 1, (255, 255, 255))
@@ -67,32 +70,37 @@ class Game:
         elif self.win_B:
             winner = myfont.render("Winner is : {}".format(self.player_B.nickname), 1, (255, 255, 255))
             self.screen.blit(winner, (405, self.Blank_height * 3 + 8 * bar_width))
-
-
+        # finishing game
+        if self.finish_game():
+            game_over = myfont.render("GAME OVER", 1, (255, 255, 255))
+            self.screen.blit(game_over, (250, self.Blank_height * 3 + info_height -30))
 
     def checking(self, player):
-        sum=[]
+        sum = []
         for i in range(3):
-            sum.append(self.board[i][1]+self.board[i][2]+self.board[i][0])
+            sum.append(self.board[i][1] + self.board[i][2] + self.board[i][0])
             sum.append(self.board[1][i] + self.board[2][i] + self.board[0][i])
-        sum.append(self.board[0][0]+self.board[1][1]+self.board[2][2])
-        sum.append(self.board[2][0]+self.board[1][1]+self.board[0][2])
-        if 3*player.value in sum:
+        sum.append(self.board[0][0] + self.board[1][1] + self.board[2][2])
+        sum.append(self.board[2][0] + self.board[1][1] + self.board[0][2])
+        if 3 * player.value in sum:
             return True
 
-
-
+    def finish_game(self):
+        if self.win_B or self.win_A or (0 not in list(chain.from_iterable(self.board))):
+            self.finish=True
+            return True
 
     def update(self):
         self.screen.fill(black)
-        if self.turn:
-            self.board, pressed = self.player_B.press_mouse(self.board)
-            if pressed:
-                self.turn = False
-        else:
-            self.board, pressed = self.player_A.press_mouse(self.board)
-            if pressed:
-                self.turn = True
+        if not self.finish:
+            if self.turn:
+                self.board, pressed = self.player_B.press_mouse(self.board)
+                if pressed:
+                    self.turn = False
+            else:
+                self.board, pressed = self.player_A.press_mouse(self.board)
+                if pressed:
+                    self.turn = True
         self.drawBoard()
         self.draw_info()
         pygame.display.update()
