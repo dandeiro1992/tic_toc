@@ -10,6 +10,7 @@ class Player:
         self.name = name
 
     def press_mouse(self, board):
+        pressed = False
         out_of_bounds = False
         mouse = pygame.mouse.get_pos()
         xpos = int(math.floor((mouse[0] / 205)))
@@ -19,7 +20,9 @@ class Player:
         if pygame.mouse.get_pressed()[0] and out_of_bounds == False and board[xpos][
             ypos] == 0 and self.name == "circle":
             board[xpos][ypos] = 1
+            pressed = True
         elif pygame.mouse.get_pressed()[0] and out_of_bounds == False and board[xpos][
             ypos] == 0 and self.name == "cross":
             board[xpos][ypos] = 2
-        return board
+            pressed = True
+        return board, pressed
