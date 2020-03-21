@@ -8,6 +8,8 @@ info_height = 150
 
 class Game:
     turn = False
+    win_A = False
+    win_B = False
 
     def initGraphics(self):
         self.Blank = pygame.image.load("obrazki/Blank.jpg")
@@ -25,7 +27,7 @@ class Game:
                 if self.board[x][y] == 0:
                     self.screen.blit(self.Blank, [x * self.Blank_width + (x + 1) * bar_width,
                                                   y * self.Blank_height + (y + 1) * bar_width])
-                elif self.board[x][y] == 1:
+                elif self.board[x][y] == 2:
                     self.screen.blit(self.Circle, [x * self.Blank_width + (x + 1) * bar_width,
                                                    y * self.Blank_height + (y + 1) * bar_width])
                 else:
@@ -45,8 +47,8 @@ class Game:
             (self.Blank_width * 3 + 4 * bar_width, self.Blank_height * 3 + 4 * bar_width + info_height))
         pygame.display.set_caption("Kółko i Krzyżyk")
         pygame.font.init()
-        self.player_A = Player("circle", self.screen)
-        self.player_B = Player("cross", self.screen)
+        self.player_A = Player("circle", self.screen, "Ola")
+        self.player_B = Player("cross", self.screen, "Damian")
 
     def draw_info(self):
         myfont = pygame.font.SysFont(None, 32)
@@ -56,6 +58,30 @@ class Game:
             self.screen.blit(self.cross, (label.get_rect().size[0] + 15, self.Blank_height * 3 + 6 * bar_width))
         else:
             self.screen.blit(self.circle, (label.get_rect().size[0] + 15, self.Blank_height * 3 + 6 * bar_width))
+        #checking the winner
+        self.win_A=self.checking(self.player_A)
+        self.win_B = self.checking(self.player_B)
+        if self.win_A:
+            winner = myfont.render("Winner is : {}".format(self.player_A.nickname), 1, (255, 255, 255))
+            self.screen.blit(winner, (405, self.Blank_height * 3 + 8 * bar_width))
+        elif self.win_B:
+            winner = myfont.render("Winner is : {}".format(self.player_B.nickname), 1, (255, 255, 255))
+            self.screen.blit(winner, (405, self.Blank_height * 3 + 8 * bar_width))
+
+
+
+    def checking(self, player):
+        sum=[]
+        for i in range(3):
+            sum.append(self.board[i][1]+self.board[i][2]+self.board[i][0])
+            sum.append(self.board[1][i] + self.board[2][i] + self.board[0][i])
+        sum.append(self.board[0][0]+self.board[1][1]+self.board[2][2])
+        sum.append(self.board[2][0]+self.board[1][1]+self.board[0][2])
+        if 3*player.value in sum:
+            return True
+
+
+
 
     def update(self):
         self.screen.fill(black)

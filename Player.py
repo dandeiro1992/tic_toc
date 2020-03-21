@@ -4,10 +4,15 @@ import math
 
 class Player:
     name = "gracz"
-
-    def __init__(self, name, screen):
+    value = 0
+    def __init__(self, name, screen, nickname="Ola"):
         self.screen = screen
         self.name = name
+        self.nickname = nickname
+        if name == "circle":
+            self.value = 2
+        else:
+            self.value = 25
 
     def press_mouse(self, board):
         pressed = False
@@ -19,10 +24,10 @@ class Player:
             out_of_bounds = True
         if pygame.mouse.get_pressed()[0] and out_of_bounds == False and board[xpos][
             ypos] == 0 and self.name == "circle":
-            board[xpos][ypos] = 1
+            board[xpos][ypos] = 2
             pressed = True
         elif pygame.mouse.get_pressed()[0] and out_of_bounds == False and board[xpos][
             ypos] == 0 and self.name == "cross":
-            board[xpos][ypos] = 2
+            board[xpos][ypos] = 25
             pressed = True
         return board, pressed
